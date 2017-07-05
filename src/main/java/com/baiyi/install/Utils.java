@@ -26,15 +26,19 @@ public class Utils {
         return false;
     }
 
+    public static boolean isListEmpty(List<?> list) {
+        if (list == null || list.size() == 0)
+            return true;
+        return false;
+    }
+
     public static String getAppPostData(Context context) {
-        JSONObject object;
+        JSONObject object = new JSONObject();
         try {
-            object = new JSONObject();
             JSONObject infoObject = new JSONObject();
             infoObject.put("app", getInstalledApp(context));
             object.put("infos", infoObject);
-            ApplicationInfo applicationInfo = context.getApplicationInfo();
-            object.put("appid", applicationInfo.processName);
+            object.put("appid", "727d83e329684a1c8820ac262d4c800b");
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -79,22 +83,18 @@ public class Utils {
         return result == 1 ? true : false;
     }
 
-    /**
-     * {"status":1,"msg":"操作成功","data":[{"adtype":"facebook","appno":"1026188327518665"},{"adtype":"google","appno":"1026188327518665"}]}
-     *
-     * @param jsonObject
-     * @return
-     */
-    public static ArrayList<String> getResultIds(String jsonObject) {
+    public static ArrayList<RequestEntry> getResultIds(String jsonObject) {
 
-        ArrayList<String> ids = new ArrayList<>();
+        ArrayList<RequestEntry> ids = new ArrayList<>();
         try {
             JSONObject o = new JSONObject(jsonObject);
             JSONArray dataArray = o.getJSONArray("data");
             for (int i = 0; i < dataArray.length(); i++) {
-
+                RequestEntry requestEntry = new RequestEntry();
                 JSONObject dataObject = dataArray.getJSONObject(i);
-                ids.add(dataObject.getString("appno"));
+                requestEntry.setAdtype(dataObject.getString("adtype"));
+                requestEntry.setAppno(dataObject.getString("appno"));
+                ids.add(requestEntry);
             }
             return ids;
         } catch (Exception e) {
@@ -102,5 +102,16 @@ public class Utils {
             return null;
         }
     }
+
+
+    public static String getAppManifestXml(Context context) {
+        try {
+            ApplicationInfo info = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            String oldFbId = info.metaData.getString("com.facebook.sdk.ApplicationId");
+            return oldFbId;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
-//gradlew makejar

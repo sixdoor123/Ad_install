@@ -34,7 +34,7 @@ public class BaseHttp
 	{
 		if (executorService == null)
 		{
-			executorService = Executors.newFixedThreadPool(3); // 固定三个线程来执行任务
+			executorService = Executors.newFixedThreadPool(3);
 		}
 	}
 
